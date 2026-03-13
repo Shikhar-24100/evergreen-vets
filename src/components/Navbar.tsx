@@ -32,21 +32,21 @@ export default function Navbar() {
     };
 
     return (
-        <header className={`fixed top-0 w-full z-[50] transition-all duration-300 ${scrolled ? "bg-white/80 backdrop-blur-md shadow-sm py-4" : "bg-transparent py-6"}`}>
+        <header className={`fixed top-0 w-full z-[50] transition-all duration-300 bg-forest shadow-md ${scrolled ? "py-4" : "py-6"}`}>
             <div className="container mx-auto px-6 md:px-12 flex items-center justify-between">
 
                 {/* Logo Left */}
                 <Link href="/" className="flex flex-col group disable-cursor-hover">
                     <div className="flex items-center gap-2">
-                        <span className={`text-2xl font-display font-medium ${scrolled ? "text-forest" : "text-white"}`}>Evergreen Vets</span>
+                        <span className="text-2xl font-display font-medium text-white">Evergreen Vets</span>
                     </div>
-                    <span className={`text-[10px] tracking-widest font-mono uppercase ${scrolled ? "text-sage" : "text-mint/80"}`}>
+                    <span className="text-[10px] tracking-widest font-mono uppercase text-mint/80">
                         Poynton, Cheshire
                     </span>
                 </Link>
 
                 {/* Center Links (Desktop) */}
-                <nav className={`hidden lg:flex items-center gap-8 ${scrolled ? "text-charcoal" : "text-white/90"}`}>
+                <nav className="hidden lg:flex items-center gap-8 text-white/90">
                     {["Home", "Services", "The Team", "Hydrotherapy", "Info Sheets", "Contact"].map((item) => {
                         const href = item === "Home" ? "/" : `/${item.toLowerCase().replace(" ", "-")}`;
                         return (
@@ -77,7 +77,7 @@ export default function Navbar() {
                     className="lg:hidden text-2xl z-[60] interactive"
                     onClick={() => setMobileMenuOpen(true)}
                 >
-                    <Menu className={scrolled ? "text-forest" : "text-white"} />
+                    <Menu className="text-white" />
                 </button>
 
                 {/* Mobile Drawer Overlay */}
