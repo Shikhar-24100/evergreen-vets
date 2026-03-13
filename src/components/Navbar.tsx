@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
@@ -8,9 +9,11 @@ import { Menu, X } from "lucide-react";
 export default function Navbar() {
     const [scrolled, setScrolled] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [isMounted, setIsMounted] = useState(false);
     const pathname = usePathname();
 
     useEffect(() => {
+        setIsMounted(true);
         const handleScroll = () => {
             setScrolled(window.scrollY > 20);
         };
@@ -32,7 +35,7 @@ export default function Navbar() {
     };
 
     return (
-        <header className={`fixed top-0 w-full z-[50] transition-all duration-300 bg-forest shadow-md ${scrolled ? "py-4" : "py-6"}`}>
+        <header className={`fixed top-0 w-full z-[1000] transition-all duration-300 bg-forest shadow-md ${scrolled ? "py-4" : "py-6"}`}>
             <div className="container mx-auto px-6 md:px-12 flex items-center justify-between">
 
                 {/* Logo Left */}
@@ -74,57 +77,63 @@ export default function Navbar() {
 
                 {/* Mobile Toggle */}
                 <button
-                    className="lg:hidden text-2xl z-[60] interactive"
+                    className="lg:hidden text-2xl z-[1000] interactive"
                     onClick={() => setMobileMenuOpen(true)}
                 >
                     <Menu className="text-white" />
                 </button>
 
-                {/* Mobile Drawer Overlay */}
-                <div
-                    className={`fixed inset-0 bg-black/50 z-[9998] transition-opacity duration-300 lg:hidden ${mobileMenuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}
-                    onClick={() => setMobileMenuOpen(false)}
-                />
+                {/* React Portal for Mobile Drawer */}
+                {isMounted && typeof document !== "undefined" && createPortal(
+                    <div className="lg:hidden">
+                        {/* Mobile Drawer Overlay */}
+                        <div
+                            className={`fixed inset-0 bg-black/60 z-[9998] transition-opacity duration-300 ${mobileMenuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}
+                            onClick={() => setMobileMenuOpen(false)}
+                        />
 
-                {/* Mobile Drawer */}
-                <div
-                    className={`fixed top-0 right-0 h-full w-[75%] bg-forest z-[9999] shadow-2xl transition-transform duration-300 ease-out lg:hidden flex flex-col pt-20 px-6 ${mobileMenuOpen ? "translate-x-0" : "translate-x-full"}`}
-                >
-                    <button
-                        className="absolute top-6 right-6 text-white text-2xl p-2 interactive"
-                        onClick={() => setMobileMenuOpen(false)}
-                    >
-                        <X size={28} />
-                    </button>
-
-                    <nav className="flex flex-col mt-8">
-                        {["Home", "Services", "The Team", "Hydrotherapy", "Info Sheets", "Contact"].map((item) => {
-                            const href = item === "Home" ? "/" : `/${item.toLowerCase().replace(" ", "-")}`;
-                            return (
-                                <Link
-                                    key={item}
-                                    href={href}
-                                    onClick={() => setMobileMenuOpen(false)}
-                                    className="text-3xl font-display text-white hover:text-gold transition-colors block py-4"
-                                >
-                                    {item}
-                                </Link>
-                            );
-                        })}
-                    </nav>
-
-                    <div className="mt-8">
-                        <button
-                            onClick={() => {
-                                setMobileMenuOpen(false);
-                                openBooking();
-                            }}
-                            className="bg-gold text-forest px-8 py-4 rounded-full font-medium text-lg w-full shadow-lg interactive"
+                        {/* Mobile Drawer */}
+                        <div
+                            className={`fixed top-0 right-0 h-[100vh] w-[75vw] bg-[#1a3a2a] z-[9999] shadow-2xl transition-transform duration-300 ease-out flex flex-col pt-20 px-6 ${mobileMenuOpen ? "translate-x-0" : "translate-x-full"}`}
                         >
-                            Book Appointment
-                        </button>
-                    </div>
-                </div>
+                            <button
+                                className="absolute top-6 right-6 text-white text-2xl p-2 interactive"
+                                onClick={() => setMobileMenuOpen(false)}
+                            >
+                                <X size={28} />
+                            </button>
+
+                            <nav className="flex flex-col mt-8">
+                                {["Home", "Services", "The Team", "Hydrotherapy", "Info Sheets", "Contact"].map((item) => {
+                                    const href = item === "Home" ? "/" : `/${item.toLowerCase().replace(" ", "-")}`;
+                                    return (
+                                        <Link
+                                            key={item}
+                                            href={href}
+                                            onClick={() => setMobileMenuOpen(false)}
+                                            className="text-[18px] font-display text-white hover:text-gold transition-colors block py-[20px]"
+                                        >
+                                            {item}
+                                        </Link>
+                                    );
+                                })}
+                            </nav>
+
+                            <div className="mt-8">
+                                <button
+                                    onClick={() => {
+                                        setMobileMenuOpen(false);
+                                        openBooking();
+                                    }}
+                                    className="bg-gold text-forest px-8 py-4 rounded-full font-medium text-[18px] w-full shadow-lg interactive"
+                                >
+                                    Book Appointment
+                                </button>
+                            </div>
+                        </div>
+                    </div>,
+                    document.body
+                )}
             </div>
         </header>
     );
