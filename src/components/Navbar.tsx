@@ -18,6 +18,15 @@ export default function Navbar() {
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
+    useEffect(() => {
+        if (mobileMenuOpen) {
+            document.body.style.overflow = "hidden";
+        } else {
+            document.body.style.overflow = "";
+        }
+        return () => { document.body.style.overflow = ""; };
+    }, [mobileMenuOpen]);
+
     const openBooking = () => {
         window.dispatchEvent(new CustomEvent("open-booking-modal"));
     };
@@ -66,14 +75,29 @@ export default function Navbar() {
                 {/* Mobile Toggle */}
                 <button
                     className="lg:hidden text-2xl z-[60] interactive"
-                    onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                    onClick={() => setMobileMenuOpen(true)}
                 >
-                    {mobileMenuOpen ? <X className="text-forest" /> : <Menu className={scrolled ? "text-forest" : "text-white"} />}
+                    <Menu className={scrolled ? "text-forest" : "text-white"} />
                 </button>
 
-                {/* Mobile Menu */}
-                {mobileMenuOpen && (
-                    <div className="fixed inset-0 bg-warm-white z-[55] flex flex-col items-center justify-center gap-8 p-6 lg:hidden animate-fade-up">
+                {/* Mobile Drawer Overlay */}
+                <div
+                    className={`fixed inset-0 bg-black/50 z-[9998] transition-opacity duration-300 lg:hidden ${mobileMenuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}
+                    onClick={() => setMobileMenuOpen(false)}
+                />
+
+                {/* Mobile Drawer */}
+                <div
+                    className={`fixed top-0 right-0 h-full w-[75%] bg-forest z-[9999] shadow-2xl transition-transform duration-300 ease-out lg:hidden flex flex-col pt-20 px-6 ${mobileMenuOpen ? "translate-x-0" : "translate-x-full"}`}
+                >
+                    <button
+                        className="absolute top-6 right-6 text-white text-2xl p-2 interactive"
+                        onClick={() => setMobileMenuOpen(false)}
+                    >
+                        <X size={28} />
+                    </button>
+
+                    <nav className="flex flex-col mt-8">
                         {["Home", "Services", "The Team", "Hydrotherapy", "Info Sheets", "Contact"].map((item) => {
                             const href = item === "Home" ? "/" : `/${item.toLowerCase().replace(" ", "-")}`;
                             return (
@@ -81,23 +105,26 @@ export default function Navbar() {
                                     key={item}
                                     href={href}
                                     onClick={() => setMobileMenuOpen(false)}
-                                    className="text-2xl font-display text-forest hover:text-gold transition-colors"
+                                    className="text-3xl font-display text-white hover:text-gold transition-colors block py-4"
                                 >
                                     {item}
                                 </Link>
                             );
                         })}
+                    </nav>
+
+                    <div className="mt-8">
                         <button
                             onClick={() => {
                                 setMobileMenuOpen(false);
                                 openBooking();
                             }}
-                            className="mt-4 bg-gold text-forest px-8 py-4 rounded-full font-medium text-lg w-full shadow-lg"
+                            className="bg-gold text-forest px-8 py-4 rounded-full font-medium text-lg w-full shadow-lg interactive"
                         >
                             Book Appointment
                         </button>
                     </div>
-                )}
+                </div>
             </div>
         </header>
     );
